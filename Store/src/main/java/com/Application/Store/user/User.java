@@ -13,6 +13,7 @@ public class User {
     private String email;
     private String password;
     private String profilePhoto;
+    private String theme;
 
     // constructors
     public User() {
@@ -46,6 +47,10 @@ public class User {
         return this.profilePhoto;
     }
 
+    public String getTheme() {
+        return this.theme;
+    }
+
     // setters
     public void setName(String name) {
         this.name = name;
@@ -65,6 +70,10 @@ public class User {
 
     public void setProfilePhoto(String profilePhoto) {
         this.profilePhoto = profilePhoto;
+    }
+
+    public void setTheme(String theme) {
+        this.theme = theme;
     }
 
     public String toString() {

@@ -66,7 +66,6 @@ public class UserController {
     @PostMapping("/uploadProfilePhoto")
     public User uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("userId") String userId) {
         User user = this.userService.uploadProfilePhoto(file, userId);
-        System.out.println(user);
         return user;
     }
 

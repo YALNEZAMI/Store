@@ -150,7 +150,8 @@ public class UserService {
             // hash password
             currentUser.setPassword(Hash.hashPassword(userToUpdate.getPassword()));
         }
-
+        // update theme
+        currentUser.setTheme(userToUpdate.getTheme());
         User userUpdated = this.userRepo.save(currentUser);
         userUpdated.setPassword("");
         return userUpdated;

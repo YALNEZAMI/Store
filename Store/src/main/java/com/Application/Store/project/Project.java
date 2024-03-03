@@ -68,4 +68,8 @@ public class Project {
         this.id = id;
     }
 
+    public void setProjectPhoto(String photo) {
+        this.photo = photo;
+    }
+
 }
