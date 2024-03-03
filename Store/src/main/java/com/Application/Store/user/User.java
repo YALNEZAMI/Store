@@ -1,22 +1,25 @@
 package com.Application.Store.user;
 
+import org.springframework.data.annotation.Id;
 // import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document("UserModel")
-public class UserModel {
+@Document("User")
+public class User {
     // priperties
-    private String _id;
+    @Id
+    private String id;
     private String name;
     private String email;
     private String password;
+    private String profilePhoto;
 
     // constructors
-    public UserModel() {
+    public User() {
     }
 
-    public UserModel(String _id, String name, String email, String password) {
-        this._id = _id;
+    public User(String id, String name, String email, String password) {
+        this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
@@ -28,7 +31,7 @@ public class UserModel {
     }
 
     public String getId() {
-        return this._id;
+        return this.id;
     }
 
     public String getEmail() {
@@ -39,13 +42,17 @@ public class UserModel {
         return this.password;
     }
 
+    public String getProfilePhoto() {
+        return this.profilePhoto;
+    }
+
     // setters
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setId(String _id) {
-        this._id = _id;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public void setEmail(String email) {
@@ -56,4 +63,15 @@ public class UserModel {
         this.password = password;
     }
 
+    public void setProfilePhoto(String profilePhoto) {
+        this.profilePhoto = profilePhoto;
+    }
+
+    public String toString() {
+        return "id:" + this.id + "\n" +
+                "name:" + this.name + "\n" +
+                "email:" + this.email + "\n" +
+                "password:" + this.password + "\n" +
+                "photo:" + this.profilePhoto + "\n";
+    }
 }

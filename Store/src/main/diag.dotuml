@@ -1,7 +1,7 @@
 ClassDiagram  {
  
  abstract class User {
-  private _id : string
+  private id : string
   private name:string
   private email : string
   private password : string

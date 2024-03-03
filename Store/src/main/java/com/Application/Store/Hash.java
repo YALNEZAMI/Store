@@ -15,7 +15,8 @@ public class Hash {
 
             // Hash the password along with the salt
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hashedBytes = digest.digest(concatenateByteArrays(password.getBytes(), salt));
+            byte[] hashedBytes = digest.digest(concatenateByteArrays(password.getBytes(),
+                    salt));
 
             // Convert hashed password and salt to hexadecimal format
             StringBuilder hexStringBuilder = new StringBuilder();
