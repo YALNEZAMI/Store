@@ -4,13 +4,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.Application.Store.project.Project;
+import com.Application.Store.user.User;
 
 @Service
 public class TaskService {
@@ -55,4 +57,24 @@ public class TaskService {
         }
     }
 
+    public List<Task> getWithMemberId(String participantId) {
+        System.out.println(participantId);
+        List<Task> tasks = this.taskRepo.findAll();
+        System.out.println(tasks.size());
+        List<Task> result = new ArrayList<>();
+        for (Task task : tasks) {
+            for (User user : task.getParticipants()) {
+                if (user.getId().equals(participantId)) {
+                    System.out.println(user.getId());
+                    result.add(task);
+                }
+            }
+        }
+        System.out.println(result.size());
+        return result;
+    }
+
+    public List<Task> getTasksByProjectId(String projectId) {
+        return this.taskRepo.findByProjectId(projectId);
+    }
 }

@@ -72,4 +72,11 @@ public class Project {
         this.photo = photo;
     }
 
+    public void setOwner(User owner) {
+        this.owner = owner;
+    }
+
+    public void setParticipants(ArrayList<User> participants) {
+        this.participants = participants;
+    }
 }

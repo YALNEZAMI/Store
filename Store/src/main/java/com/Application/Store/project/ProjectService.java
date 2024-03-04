@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.Application.Store.user.User;
+import com.Application.Store.user.UserService;
 
 @Service
 public class ProjectService {
@@ -21,6 +22,8 @@ public class ProjectService {
 
     @Autowired
     ProjectRepo projectRepo;
+    @Autowired
+    UserService userService;
 
     public Project create(Project project) {
         return this.projectRepo.save(project);
@@ -70,6 +73,21 @@ public class ProjectService {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public Project getProjectById(String id) {
+        Project project = this.projectRepo.findById(id).orElse(null);
+        // fill owner
+        User owner = this.userService.getUser(project.getOwner().getId());
+        project.setOwner(owner);
+        // fill participants
+        ArrayList<User> participants = new ArrayList<>();
+        for (User participant : project.getParticipants()) {
+            participants.add(this.userService.getUser(participant.getId()));
+
+        }
+        project.setParticipants(participants);
+        return project;
     }
 
 }

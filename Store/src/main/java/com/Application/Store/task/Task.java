@@ -14,7 +14,7 @@ public class Task {
     @Id
     private String id;
     private String name;
-    private String project_id;
+    private String projectId;
     private String description;
     private String deadLine;
     private ArrayList<User> participants;
@@ -42,7 +42,7 @@ public class Task {
     }
 
     public String getProjectId() {
-        return this.project_id;
+        return this.projectId;
     }
 
     public String getDescription() {
