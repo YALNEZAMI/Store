@@ -30,6 +30,11 @@ public class TaskController {
         return this.taskService.create(task);
     }
 
+    @GetMapping("/{id}")
+    public Task getTaskById(@PathVariable String id) {
+        return this.taskService.getTaskById(id);
+    }
+
     @PostMapping("/uploadTaskPhoto")
     public Task uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("taskId") String taskId) {
         Task task = this.taskService.uploadTaskPhoto(file, taskId);

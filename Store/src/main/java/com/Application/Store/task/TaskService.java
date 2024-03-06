@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.Application.Store.user.User;
+import com.Application.Store.user.UserService;
 
 @Service
 public class TaskService {
@@ -21,6 +22,8 @@ public class TaskService {
 
     @Autowired
     TaskRepo taskRepo;
+    @Autowired
+    UserService userService;
 
     public Task create(Task task) {
         return this.taskRepo.save(task);
@@ -72,5 +75,16 @@ public class TaskService {
 
     public List<Task> getTasksByProjectId(String projectId) {
         return this.taskRepo.findByProjectId(projectId);
+    }
+
+    public Task getTaskById(String id) {
+        Task task = this.taskRepo.findById(id).orElse(null);
+        ArrayList<User> participants = new ArrayList<>();
+        for (User user : task.getParticipants()) {
+            participants.add(this.userService.getUser(user.getId()));
+        }
+        task.setParticipants(participants);
+
+        return task;
     }
 }

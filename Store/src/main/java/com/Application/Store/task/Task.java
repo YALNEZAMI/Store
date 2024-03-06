@@ -78,4 +78,8 @@ public class Task {
         this.photo = photo;
     }
 
+    public void setParticipants(ArrayList<User> participants) {
+        this.participants = participants;
+    }
+
 }
