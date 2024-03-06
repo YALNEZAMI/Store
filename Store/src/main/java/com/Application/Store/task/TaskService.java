@@ -58,19 +58,15 @@ public class TaskService {
     }
 
     public List<Task> getWithMemberId(String participantId) {
-        System.out.println(participantId);
         List<Task> tasks = this.taskRepo.findAll();
-        System.out.println(tasks.size());
         List<Task> result = new ArrayList<>();
         for (Task task : tasks) {
             for (User user : task.getParticipants()) {
                 if (user.getId().equals(participantId)) {
-                    System.out.println(user.getId());
                     result.add(task);
                 }
             }
         }
-        System.out.println(result.size());
         return result;
     }
 

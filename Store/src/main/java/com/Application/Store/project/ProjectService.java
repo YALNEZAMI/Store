@@ -90,4 +90,7 @@ public class ProjectService {
         return project;
     }
 
+    public void deleteProject(String projectId) {
+        this.projectRepo.deleteById(projectId);
+    }
 }

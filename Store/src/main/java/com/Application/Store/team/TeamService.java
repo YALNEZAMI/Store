@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.Application.Store.user.User;
+import com.Application.Store.user.UserService;
 
 @Service
 public class TeamService {
@@ -21,6 +22,8 @@ public class TeamService {
 
     @Autowired
     TeamRepo teamRepo;
+    @Autowired
+    UserService userService;
 
     public Team create(Team task) {
         return this.teamRepo.save(task);
@@ -68,5 +71,58 @@ public class TeamService {
             }
         }
         return result;
+    }
+
+    public Team getTeamById(String id) {
+        Team team = this.teamRepo.findById(id).orElse(null);
+        // populate owner
+        User owner = this.userService.getUser(team.getOwner().getId());
+        team.setOwner(owner);
+        // populate members
+        List<User> members = new ArrayList<>();
+        for (User member : team.getMembers()) {
+            members.add(this.userService.getUser(member.getId()));
+        }
+        team.setMembers(members);
+        return team;
+    }
+
+    public Team deleteMember(String teamId, String memberId) {
+        Team team = this.getTeamById(teamId);
+        // make new members list without the given member to delete
+        List<User> newMembers = new ArrayList<>();
+        for (User user : team.getMembers()) {
+            if (!user.getId().equals(memberId)) {
+                newMembers.add(user);
+            }
+        }
+        // set the new members list to the team
+        team.setMembers(newMembers);
+        // update the team in database
+        this.teamRepo.save(team);
+        return team;
+    }
+
+    public Team addMember(String teamId, String memberId) {
+        Team team = this.getTeamById(teamId);
+        // check if member already exist
+        for (User member : team.getMembers()) {
+            if (member.getId().equals(memberId)) {
+                return team;
+            }
+        }
+        // retrieve member from data base
+        User member = this.userService.getUser(memberId);
+        // add member to the team member list
+        team.getMembers().add(member);
+        // set the new list to the team
+        team.setMembers(team.getMembers());
+        // update in database
+        this.teamRepo.save(team);
+        return team;
+    }
+
+    public void deleteTeam(String teamID) {
+        this.teamRepo.deleteById(teamID);
     }
 }

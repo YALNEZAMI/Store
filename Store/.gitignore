@@ -3,6 +3,10 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+/src/main/resources/static/profilePhoto/
+/src/main/resources/static/projectPhoto/
+/src/main/resources/static/taskPhoto/
+/src/main/resources/static/teamPhoto/
 
 ### STS ###
 .apt_generated

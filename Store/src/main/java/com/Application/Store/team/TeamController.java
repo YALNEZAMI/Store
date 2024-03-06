@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
@@ -36,4 +37,23 @@ public class TeamController {
         return this.teamService.getWithMemberId(memberId);
     }
 
+    @GetMapping("/{id}")
+    public Team getTeamById(@PathVariable String id) {
+        return this.teamService.getTeamById(id);
+    }
+
+    @DeleteMapping("/deleteMember/{teamId}/{memberId}")
+    public Team deleteMember(@PathVariable String teamId, @PathVariable String memberId) {
+        return this.teamService.deleteMember(teamId, memberId);
+    }
+
+    @DeleteMapping("/{teamId}")
+    public void deleteTeam(@PathVariable String teamId) {
+        this.teamService.deleteTeam(teamId);
+    }
+
+    @GetMapping("/addMember/{teamId}/{memberId}")
+    public Team addMember(@PathVariable String teamId, @PathVariable String memberId) {
+        return this.teamService.addMember(teamId, memberId);
+    }
 }

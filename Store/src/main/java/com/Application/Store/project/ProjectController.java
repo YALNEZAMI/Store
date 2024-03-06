@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 // import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
@@ -43,5 +44,10 @@ public class ProjectController {
     public Project uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("projectId") String projectId) {
         Project project = this.projectService.uploadProjectPhoto(file, projectId);
         return project;
+    }
+
+    @DeleteMapping("/{projectId}")
+    public void deleteProject(@PathVariable String projectId) {
+        this.projectService.deleteProject(projectId);
     }
 }

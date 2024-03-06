@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 import java.nio.file.Path;
@@ -159,7 +160,16 @@ public class UserService {
     }
 
     public List<User> searchByName(String key) {
-        List<User> users = this.userRepo.findByNameContaining(key);
-        return users;
+        // make the search case insensitive
+        List<User> usersLowerCase = this.userRepo.findByNameContaining(key.toLowerCase());
+        List<User> usersUpperCase = this.userRepo.findByNameContaining(key.toUpperCase());
+        List<User> result = new ArrayList<>();
+        for (User user : usersLowerCase) {
+            result.add(user);
+        }
+        for (User user : usersUpperCase) {
+            result.add(user);
+        }
+        return result;
     }
 }
