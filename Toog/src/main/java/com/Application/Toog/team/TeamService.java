@@ -1,5 +1,6 @@
 package com.Application.Toog.team;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -73,6 +74,19 @@ public class TeamService {
         return result;
     }
 
+    public List<Team> getWithOwnerId(String memberId) {
+        List<Team> teams = this.teamRepo.findAll();
+        List<Team> result = new ArrayList<>();
+        for (Team team : teams) {
+            User owner = team.getOwner();
+            if (owner.getId().equals(memberId)) {
+                result.add(team);
+
+            }
+        }
+        return result;
+    }
+
     public Team getTeamById(String id) {
         Team team = this.teamRepo.findById(id).orElse(null);
         // populate owner
@@ -123,6 +137,23 @@ public class TeamService {
     }
 
     public void deleteTeam(String teamID) {
+        Team team = this.getTeamById(teamID);
+        String photoUrl = team.getPhoto();
+        String[] photoUrlSplit = photoUrl.split("/");
+        String photoName = photoUrlSplit[photoUrlSplit.length - 1];
+        String path = "./Toog/src/main/resources/static/taskPhoto/" + photoName;
+        File file = new File(path);
+        // Check if the file exists
+        if (file.exists() && photoName != "default_team.png") {
+            // Attempt to delete the file
+            if (file.delete()) {
+                System.out.println("File deleted successfully.");
+            } else {
+                System.err.println("Failed to delete the file.");
+            }
+        } else {
+            System.err.println("File does not exist.");
+        }
         this.teamRepo.deleteById(teamID);
     }
 }

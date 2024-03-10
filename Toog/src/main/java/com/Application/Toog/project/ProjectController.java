@@ -31,8 +31,13 @@ public class ProjectController {
     }
 
     @GetMapping("withParticipant/{userId}")
-    public List<Project> getParticipantProject(@PathVariable String userId) {
-        return this.projectService.getParticipantProject(userId);
+    public List<Project> getParticipantProjects(@PathVariable String userId) {
+        return this.projectService.getParticipantProjects(userId);
+    }
+
+    @GetMapping("withOwner/{userId}")
+    public List<Project> getOwnerProjects(@PathVariable String userId) {
+        return this.projectService.getOwnerProjects(userId);
     }
 
     @GetMapping("/{id}")

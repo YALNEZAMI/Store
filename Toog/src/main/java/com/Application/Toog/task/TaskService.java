@@ -1,5 +1,7 @@
 package com.Application.Toog.task;
 
+import java.io.File;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -50,6 +52,7 @@ public class TaskService {
             Path path = Paths.get(UPLOAD_FOLDER + taskId + ext);
             Files.write(path, bytes);
             // update the user photo url in the data base
+
             Task taskToUpdate = this.taskRepo.findById(taskId).orElse(null);
             taskToUpdate.setTaskPhoto(this.API_URL + "/taskPhoto/" + taskId + ext);
             this.taskRepo.save(taskToUpdate);
@@ -86,5 +89,36 @@ public class TaskService {
         task.setParticipants(participants);
 
         return task;
+    }
+
+    public void deleteTaskById(String id) {
+        this.taskRepo.deleteById(id);
+    }
+
+    public void deleteProjectTasks(String projectId) {
+        // delete photos related
+        List<Task> tasks = this.getTasksByProjectId(projectId);
+        for (Task task : tasks) {
+            String photoUrl = task.getPhoto();
+            String[] photoUrlSplit = photoUrl.split("/");
+            String photoName = photoUrlSplit[photoUrlSplit.length - 1];
+            String path = "./Toog/src/main/resources/static/taskPhoto/" + photoName;
+            File file = new File(path);
+            System.out.println(photoName != "default_task.png");
+            // Check if the file exists
+            if (file.exists() && photoName != "default_task.png") {
+                System.out.println("photoName" + photoName);
+                // Attempt to delete the file
+                if (file.delete()) {
+                    System.out.println("File deleted successfully.");
+                } else {
+                    System.err.println("Failed to delete the file.");
+                }
+            } else {
+                System.err.println("File does not exist.");
+            }
+        }
+        // delete tasks from database
+        this.taskRepo.deleteByProjectId(projectId);
     }
 }

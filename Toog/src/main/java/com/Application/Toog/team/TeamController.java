@@ -37,6 +37,11 @@ public class TeamController {
         return this.teamService.getWithMemberId(memberId);
     }
 
+    @GetMapping("/withOwnerId/{ownerId}")
+    public List<Team> getWithOwnerId(@PathVariable String ownerId) {
+        return this.teamService.getWithOwnerId(ownerId);
+    }
+
     @GetMapping("/{id}")
     public Team getTeamById(@PathVariable String id) {
         return this.teamService.getTeamById(id);

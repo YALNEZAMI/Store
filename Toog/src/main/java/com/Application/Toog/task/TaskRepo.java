@@ -8,4 +8,6 @@ import java.util.List;
 @Repository
 public interface TaskRepo extends MongoRepository<Task, String> {
     List<Task> findByProjectId(String projectId);
+
+    void deleteByProjectId(String projectId);
 }
