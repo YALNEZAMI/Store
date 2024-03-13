@@ -28,6 +28,7 @@ public class ProjectService {
     UserService userService;
     @Autowired
     TaskService taskService;
+    String UPLOAD_FOLDER = "./Toog/src/main/resources/static/projectPhoto/"; // Change this to
 
     public Project create(Project project) {
         return this.projectRepo.save(project);
@@ -68,7 +69,6 @@ public class ProjectService {
 
         try {
             // upload the file to the profile photo folder
-            String UPLOAD_FOLDER = "./Toog/src/main/resources/static/projectPhoto/"; // Change this to
             Path directory = Paths.get(UPLOAD_FOLDER);
             // create a direction if not exist
             if (!Files.exists(directory)) {
@@ -84,12 +84,35 @@ public class ProjectService {
             Files.write(path, bytes);
             // update the user photo url in the data base
             Project projectToUpdate = this.projectRepo.findById(projectId).orElse(null);
+            // delete the old file
+            this.deletePhoto(projectToUpdate);
             projectToUpdate.setProjectPhoto(this.API_URL + "/projectPhoto/" + projectId + ext);
             this.projectRepo.save(projectToUpdate);
             return projectToUpdate;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    public void deletePhoto(Project project) {
+        String oldPhotoUrl = project.getPhoto();
+        String[] oldPhotoUrlSplit = oldPhotoUrl.split("/");
+        String oldPhotoPath = UPLOAD_FOLDER + oldPhotoUrlSplit[oldPhotoUrlSplit.length - 1];
+        File fileToDelete = new File(oldPhotoPath);
+        // Check if the file exists before attempting to delete it
+        if (fileToDelete.exists()) {
+            // Attempt to delete the file
+            boolean deleted = fileToDelete.delete();
+
+            // Check if the deletion was successful
+            if (deleted) {
+                System.out.println("File deleted successfully.");
+            } else {
+                System.out.println("Failed to delete the file.");
+            }
+        } else {
+            System.out.println("File does not exist.");
         }
     }
 
@@ -113,26 +136,18 @@ public class ProjectService {
         this.taskService.deleteProjectTasks(projectId);
         // delete project photo
         Project project = this.getProjectById(projectId);
-        String photoUrl = project.getPhoto();
-        String[] photoUrlSplit = photoUrl.split("/");
-        String photoName = photoUrlSplit[photoUrlSplit.length - 1];
-        String path = "./Toog/src/main/resources/static/projectPhoto/" + photoName;
-        File file = new File(path);
-        // Check if the file exists
-        if (file.exists() && photoName != "default_project.png") {
-            System.out.println("photoName" + photoName);
-
-            // Attempt to delete the file
-            if (file.delete()) {
-                System.out.println("File deleted successfully.");
-            } else {
-                System.err.println("Failed to delete the file.");
-            }
-        } else {
-            System.err.println("File does not exist.");
-        }
+        this.deletePhoto(project);
         // delete project from database
         this.projectRepo.deleteById(projectId);
 
+    }
+
+    public void deleteProjectsOfUser(String userId) {
+        List<Project> projects = this.projectRepo.findAll();
+        for (Project project : projects) {
+            if (project.getOwner().getId().equals(userId)) {
+                this.deleteProject(project.getId());
+            }
+        }
     }
 }

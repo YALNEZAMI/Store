@@ -10,11 +10,11 @@ import com.Application.Toog.user.User;
 @Document("Team")
 public class Team {
     @Id
-    String id;
-    String name;
-    String photo;
-    List<User> members;
-    User owner;
+    private String id;
+    private String name;
+    private String photo;
+    private List<User> members;
+    private User owner;
 
     // constructors
     public Team() {

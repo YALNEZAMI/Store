@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.Application.Toog.project.Project;
 import com.Application.Toog.user.User;
 import com.Application.Toog.user.UserService;
 
@@ -26,6 +27,7 @@ public class TaskService {
     TaskRepo taskRepo;
     @Autowired
     UserService userService;
+    String UPLOAD_FOLDER = "./Toog/src/main/resources/static/taskPhoto/"; // Change this to
 
     public Task create(Task task) {
         return this.taskRepo.save(task);
@@ -38,7 +40,6 @@ public class TaskService {
 
         try {
             // upload the file to the profile photo folder
-            String UPLOAD_FOLDER = "./Toog/src/main/resources/static/taskPhoto/"; // Change this to
             Path directory = Paths.get(UPLOAD_FOLDER);
             if (!Files.exists(directory)) {
                 Files.createDirectories(directory);
@@ -54,12 +55,36 @@ public class TaskService {
             // update the user photo url in the data base
 
             Task taskToUpdate = this.taskRepo.findById(taskId).orElse(null);
+            // delete the old file
+            this.deletePhoto(taskToUpdate);
+            // set new photo url
             taskToUpdate.setTaskPhoto(this.API_URL + "/taskPhoto/" + taskId + ext);
             this.taskRepo.save(taskToUpdate);
             return taskToUpdate;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    public void deletePhoto(Task task) {
+        String oldPhotoUrl = task.getPhoto();
+        String[] oldPhotoUrlSplit = oldPhotoUrl.split("/");
+        String oldPhotoPath = UPLOAD_FOLDER + oldPhotoUrlSplit[oldPhotoUrlSplit.length - 1];
+        File fileToDelete = new File(oldPhotoPath);
+        // Check if the file exists before attempting to delete it
+        if (fileToDelete.exists()) {
+            // Attempt to delete the file
+            boolean deleted = fileToDelete.delete();
+
+            // Check if the deletion was successful
+            if (deleted) {
+                System.out.println("File deleted successfully.");
+            } else {
+                System.out.println("Failed to delete the file.");
+            }
+        } else {
+            System.out.println("File does not exist.");
         }
     }
 
@@ -92,6 +117,8 @@ public class TaskService {
     }
 
     public void deleteTaskById(String id) {
+        Task task = this.getTaskById(id);
+        this.deletePhoto(task);
         this.taskRepo.deleteById(id);
     }
 
@@ -99,26 +126,8 @@ public class TaskService {
         // delete photos related
         List<Task> tasks = this.getTasksByProjectId(projectId);
         for (Task task : tasks) {
-            String photoUrl = task.getPhoto();
-            String[] photoUrlSplit = photoUrl.split("/");
-            String photoName = photoUrlSplit[photoUrlSplit.length - 1];
-            String path = "./Toog/src/main/resources/static/taskPhoto/" + photoName;
-            File file = new File(path);
-            System.out.println(photoName != "default_task.png");
-            // Check if the file exists
-            if (file.exists() && photoName != "default_task.png") {
-                System.out.println("photoName" + photoName);
-                // Attempt to delete the file
-                if (file.delete()) {
-                    System.out.println("File deleted successfully.");
-                } else {
-                    System.err.println("Failed to delete the file.");
-                }
-            } else {
-                System.err.println("File does not exist.");
-            }
+            this.deleteTaskById(task.getId());
         }
-        // delete tasks from database
-        this.taskRepo.deleteByProjectId(projectId);
+
     }
 }

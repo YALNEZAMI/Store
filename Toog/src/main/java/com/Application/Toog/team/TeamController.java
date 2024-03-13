@@ -57,6 +57,11 @@ public class TeamController {
         this.teamService.deleteTeam(teamId);
     }
 
+    @DeleteMapping("/deleteTeamsOfOwner/{ownerId}")
+    public void deleteTeamsOfOwner(@PathVariable String ownerId) {
+        this.teamService.deleteTeamsOfOwner(ownerId);
+    }
+
     @GetMapping("/addMember/{teamId}/{memberId}")
     public Team addMember(@PathVariable String teamId, @PathVariable String memberId) {
         return this.teamService.addMember(teamId, memberId);

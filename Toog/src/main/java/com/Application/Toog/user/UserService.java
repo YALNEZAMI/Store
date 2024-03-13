@@ -1,6 +1,7 @@
 package com.Application.Toog.user;
 
 import java.util.Optional;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -22,6 +23,8 @@ public class UserService {
 
     @Autowired
     UserRepo userRepo;
+
+    String UPLOAD_FOLDER = "./Toog/src/main/resources/static/profilePhoto/"; // Change this to
 
     public User register(User user) {
         // short password
@@ -109,7 +112,6 @@ public class UserService {
 
         try {
             // upload the file to the profile photo folder
-            String UPLOAD_FOLDER = "./Toog/src/main/resources/static/profilePhoto/"; // Change this to
             Path directory = Paths.get(UPLOAD_FOLDER);
             if (!Files.exists(directory)) {
                 Files.createDirectories(directory);
@@ -124,12 +126,35 @@ public class UserService {
             Files.write(path, bytes);
             // update the user photo url in the data base
             User userToUpdate = this.userRepo.findById(userId).orElse(null);
+            // delete the old file
+
+            this.deletePhoto(userToUpdate);
             userToUpdate.setProfilePhoto(this.API_URL + "/profilePhoto/" + userId + ext);
             this.userRepo.save(userToUpdate);
             return userToUpdate;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    public void deletePhoto(User user) {
+        String oldPhotoUrl = user.getProfilePhoto();
+        String[] oldPhotoUrlSplit = oldPhotoUrl.split("/");
+        String oldPhotoPath = UPLOAD_FOLDER + oldPhotoUrlSplit[oldPhotoUrlSplit.length - 1];
+        File fileToDelete = new File(oldPhotoPath);
+        // Check if the file exists before attempting to delete it
+        if (fileToDelete.exists()) {
+            // Attempt to delete the file
+            boolean deleted = fileToDelete.delete();
+            // Check if the deletion was successful
+            if (deleted) {
+                System.out.println("File deleted successfully.");
+            } else {
+                System.out.println("Failed to delete the file.");
+            }
+        } else {
+            System.out.println("File does not exist.");
         }
     }
 
@@ -171,5 +196,11 @@ public class UserService {
             result.add(user);
         }
         return result;
+    }
+
+    public void deleteUser(String id) {
+        User user = this.getUser(id);
+        this.deletePhoto(user);
+        this.userRepo.deleteById(id);
     }
 }

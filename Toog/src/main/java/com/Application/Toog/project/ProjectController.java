@@ -55,4 +55,9 @@ public class ProjectController {
     public void deleteProject(@PathVariable String projectId) {
         this.projectService.deleteProject(projectId);
     }
+
+    @DeleteMapping("deleteProjectsOfUser/{userId}")
+    public void deleteProjectsOfUser(@PathVariable String userId) {
+        this.projectService.deleteProjectsOfUser(userId);
+    }
 }

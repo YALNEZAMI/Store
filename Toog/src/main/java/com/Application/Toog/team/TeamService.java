@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.Application.Toog.project.Project;
 import com.Application.Toog.user.User;
 import com.Application.Toog.user.UserService;
 
@@ -25,6 +26,7 @@ public class TeamService {
     TeamRepo teamRepo;
     @Autowired
     UserService userService;
+    String UPLOAD_FOLDER = "./Toog/src/main/resources/static/teamPhoto/"; // Change this to
 
     public Team create(Team task) {
         return this.teamRepo.save(task);
@@ -37,7 +39,6 @@ public class TeamService {
 
         try {
             // upload the file to the profile photo folder
-            String UPLOAD_FOLDER = "./Toog/src/main/resources/static/teamPhoto/"; // Change this to
             Path directory = Paths.get(UPLOAD_FOLDER);
             if (!Files.exists(directory)) {
                 Files.createDirectories(directory);
@@ -52,12 +53,35 @@ public class TeamService {
             Files.write(path, bytes);
             // update the user photo url in the data base
             Team teamToUpdate = this.teamRepo.findById(teamId).orElse(null);
+            // delete the old file
+            this.deletePhoto(teamToUpdate);
             teamToUpdate.setTeamPhoto(this.API_URL + "/teamPhoto/" + teamId + ext);
             this.teamRepo.save(teamToUpdate);
             return teamToUpdate;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    public void deletePhoto(Team team) {
+        String oldPhotoUrl = team.getPhoto();
+        String[] oldPhotoUrlSplit = oldPhotoUrl.split("/");
+        String oldPhotoPath = UPLOAD_FOLDER + oldPhotoUrlSplit[oldPhotoUrlSplit.length - 1];
+        File fileToDelete = new File(oldPhotoPath);
+        // Check if the file exists before attempting to delete it
+        if (fileToDelete.exists()) {
+            // Attempt to delete the file
+            boolean deleted = fileToDelete.delete();
+
+            // Check if the deletion was successful
+            if (deleted) {
+                System.out.println("File deleted successfully.");
+            } else {
+                System.out.println("Failed to delete the file.");
+            }
+        } else {
+            System.out.println("File does not exist.");
         }
     }
 
@@ -137,23 +161,19 @@ public class TeamService {
     }
 
     public void deleteTeam(String teamID) {
+        System.out.println(11111111);
         Team team = this.getTeamById(teamID);
-        String photoUrl = team.getPhoto();
-        String[] photoUrlSplit = photoUrl.split("/");
-        String photoName = photoUrlSplit[photoUrlSplit.length - 1];
-        String path = "./Toog/src/main/resources/static/taskPhoto/" + photoName;
-        File file = new File(path);
-        // Check if the file exists
-        if (file.exists() && photoName != "default_team.png") {
-            // Attempt to delete the file
-            if (file.delete()) {
-                System.out.println("File deleted successfully.");
-            } else {
-                System.err.println("Failed to delete the file.");
-            }
-        } else {
-            System.err.println("File does not exist.");
-        }
+        this.deletePhoto(team);
         this.teamRepo.deleteById(teamID);
     }
+
+    public void deleteTeamsOfOwner(String ownerId) {
+        List<Team> teams = this.teamRepo.findAll();
+        for (Team team : teams) {
+            if (team.getOwner().getId().equals(ownerId)) {
+                this.deleteTeam(team.getId());
+            }
+        }
+    }
+
 }
